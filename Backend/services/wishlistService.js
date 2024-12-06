@@ -5,7 +5,7 @@ exports.getWishlistByUserId = async (userId) => {
   try {
     const wishlist = await Wishlist.findOne({ user: userId }).populate({
       path: 'books',
-      select: '_id name', // Include only necessary fields
+      select: '_id title author price image',
     });
     if (!wishlist) {
       return { books: [] };
