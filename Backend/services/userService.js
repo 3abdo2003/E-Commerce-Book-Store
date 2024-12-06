@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/Users'); // Correct model path
 
@@ -33,13 +34,17 @@ exports.registerUser = async (userData) => {
         throw new Error('Invalid credentials');
       }
   
-      // Compare the hashed password
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         throw new Error('Invalid credentials');
       }
   
-      return user;
+      // Generate a token
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: '1h', // Adjust expiration as needed
+      });
+  
+      return { user, token }; // Return both user and token
     } catch (error) {
       throw new Error(error.message);
     }

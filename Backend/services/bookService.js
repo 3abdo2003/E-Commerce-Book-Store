@@ -8,6 +8,10 @@ class BookService {
 
   static async getBooks(filter = {}) {
     return Book.find(filter).populate('category');
+  }  
+
+  static async getBookById(bookId) {
+    return Book.findById(bookId);
   }
 
   static async updateBook(bookId, data) {

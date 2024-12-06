@@ -3,12 +3,18 @@ const BookService = require('../services/bookService');
 
 exports.getBooks = async (req, res) => {
   try {
-    const books = await BookService.getBooks();
+    const { category, author } = req.query;
+    const filter = {};
+    if (category) filter.category = category;
+    if (author) filter.author = author;
+
+    const books = await BookService.getBooks(filter);
     res.status(200).json(books);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 exports.getBookById = async (req, res) => {
   try {

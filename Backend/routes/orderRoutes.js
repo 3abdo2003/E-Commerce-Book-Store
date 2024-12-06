@@ -1,16 +1,19 @@
-// backend/routes/orderRoutes.js
 const express = require('express');
-const { createOrder, getOrderById, getUserOrders, updateOrderStatus } = require('../controllers/orderController');
-const { protect, adminOnly } = require('../middleware/authMiddleware');
-
+const orderController = require('../controllers/orderController');
+const { protect, adminOnly, customerOnly } = require('../middleware/authMiddleware');
 const router = express.Router();
 
-// User Order Routes
-router.post('/', protect, createOrder);        
-router.get('/:id', protect, getOrderById);       
-router.get('/', protect, getUserOrders);        
+// Customer-only routes
+router.post('/checkout', protect, customerOnly, orderController.checkout);
+router.post('/create-checkout-session', protect, customerOnly, orderController.createCheckoutSession);
+router.get('/checkout-success', protect, customerOnly, orderController.checkoutSuccess); // Updated route for successful payment
+router.get('/user-orders', protect, customerOnly, orderController.getUserOrders);
 
-// Admin Routes (Protected)
-router.put('/:id/status', protect, adminOnly, updateOrderStatus); // Admin can update order status
+// General route accessible by authenticated users
+router.get('/:id', protect, orderController.getOrderById);
+
+
+// Admin-only route for updating order status
+router.put('/:id/status', protect, adminOnly, orderController.updateOrderStatus);
 
 module.exports = router;

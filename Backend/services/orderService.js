@@ -1,73 +1,32 @@
-// backend/services/orderService.js
 const Order = require('../models/Order');
-const Cart = require('../models/Cart');
-const Book = require('../models/Book');
 
-exports.createOrder = async (userId, orderData) => {
-  try {
-    const cart = await Cart.findOne({ user: userId }).populate('items.book');
-    if (!cart || cart.items.length === 0) {
-      throw new Error('Your cart is empty');
-    }
-
-    // Calculate total price
-    const totalPrice = cart.items.reduce((total, item) => {
-      return total + (item.book.price * item.quantity);
-    }, 0);
-
-    const newOrder = new Order({
-      user: userId,
-      items: cart.items,
-      totalPrice,
-      shippingAddress: orderData.shippingAddress,
-      paymentMethod: orderData.paymentMethod,
-    });
-
-    const savedOrder = await newOrder.save();
-
-    // Clear the cart after placing the order
-    await Cart.findOneAndDelete({ user: userId });
-
-    return savedOrder;
-  } catch (error) {
-    throw new Error(error.message);
-  }
+// Service function to create an order
+exports.createOrder = async (orderData) => {
+  const newOrder = new Order(orderData);
+  return await newOrder.save();
 };
 
-exports.getOrderById = async (orderId) => {
-  try {
-    const order = await Order.findById(orderId).populate('items.book');
-    if (!order) {
-      throw new Error('Order not found');
-    }
-    return order;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
-
-exports.getUserOrders = async (userId) => {
-  try {
-    const orders = await Order.find({ user: userId }).populate('items.book');
-    return orders;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
-
+// Service function to update the order status
 exports.updateOrderStatus = async (orderId, status) => {
-  try {
-    const validStatuses = ['Pending', 'Shipped', 'Delivered'];
-    if (!validStatuses.includes(status)) {
-      throw new Error('Invalid status');
-    }
+  const order = await Order.findById(orderId);
+  if (!order) throw new Error('Order not found');
 
-    const order = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
-    if (!order) {
-      throw new Error('Order not found');
-    }
-    return order;
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  order.status = status;
+  return await order.save();
+};
+
+// Service function to get an order by ID
+exports.getOrderById = async (orderId) => {
+  return await Order.findById(orderId).populate('user', 'name email').populate('items.book');
+};
+
+// Service function to get all orders for a user
+exports.getOrdersByUserId = async (userId) => {
+  return await Order.find({ user: userId })
+    .populate('user', 'name email')
+    .populate({
+      path: 'items.book',
+      select: 'title price', // Ensure we retrieve `title` and `price`
+    })
+    .select('_id items totalPrice shippingAddress phoneNumber status'); // Select the fields you want to display
 };

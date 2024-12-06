@@ -1,16 +1,16 @@
 // backend/routes/bookRoutes.js
 const express = require('express');
-const { getBooks, getBookById, createBook, updateBook, deleteBook } = require('../controllers/bookController');
+const bookController= require('../controllers/bookController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 // Public Routes
-router.get('/', getBooks); 
-router.get('/:id', getBookById); 
+router.get('/', bookController.getBooks); 
+router.get('/:id', bookController.getBookById); 
 // Admin Routes (Protected)
-router.post('/', protect, adminOnly, createBook); 
-router.put('/:id', protect, adminOnly, updateBook); 
-router.delete('/:id', protect, adminOnly, deleteBook);
+router.post('/', protect, adminOnly, bookController.createBook); 
+router.put('/:id', protect, adminOnly, bookController.updateBook); 
+router.delete('/:id', protect, adminOnly, bookController.deleteBook);
 
 module.exports = router;
 

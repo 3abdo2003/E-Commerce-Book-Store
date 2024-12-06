@@ -1,10 +1,12 @@
 // backend/services/wishlistService.js
 const Wishlist = require('../models/Wishlist');
-const Book = require('../models/Book');
 
 exports.getWishlistByUserId = async (userId) => {
   try {
-    const wishlist = await Wishlist.findOne({ user: userId }).populate('books');
+    const wishlist = await Wishlist.findOne({ user: userId }).populate({
+      path: 'books',
+      select: '_id name', // Include only necessary fields
+    });
     if (!wishlist) {
       return { books: [] };
     }
@@ -13,6 +15,7 @@ exports.getWishlistByUserId = async (userId) => {
     throw new Error(error.message);
   }
 };
+
 
 exports.addToWishlist = async (userId, bookId) => {
   try {

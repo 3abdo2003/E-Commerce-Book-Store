@@ -1,58 +1,60 @@
 // backend/controllers/cartController.js
 const CartService = require('../services/cartService');
 
-// Get the user's cart
 exports.getCart = async (req, res) => {
+  const userId = req.user._id;
+
   try {
-    const cart = await CartService.getCartByUserId(req.user._id); // Ensure user is logged in before accessing cart
+    const cart = await CartService.getCartByUserId(userId);
     res.status(200).json(cart);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Failed to retrieve cart.' });
   }
 };
 
-// Add a book to the cart
-exports.addToCart = async (req, res) => {
+exports.addItem = async (req, res) => {
+  const userId = req.user._id;
+  const { bookId, quantity } = req.body;
+
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: 'You must be signed in to add items to your cart.' });
-    }
-    const { bookId, quantity } = req.body;
-    // Check if the book is available
-    const cart = await CartService.addToCart(req.user._id, bookId, quantity);
-    res.status(200).json(cart);
+    const updatedCart = await CartService.addItemToCart(userId, bookId, quantity);
+    res.status(200).json(updatedCart);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Failed to add item to cart.' });
   }
 };
 
-// Remove a book from the cart
-exports.removeFromCart = async (req, res) => {
+exports.removeItem = async (req, res) => {
+  const userId = req.user._id;
+  const { bookId } = req.body;
+
   try {
-    const { bookId } = req.params;  // Get book ID from params
-    const cart = await CartService.removeFromCart(req.user._id, bookId);  // Service handles removal logic
-    if (!cart) {
-      return res.status(404).json({ message: 'Book not found in cart' });
-    }
-    res.status(200).json(cart);
+    const updatedCart = await CartService.removeItemFromCart(userId, bookId);
+    res.status(200).json(updatedCart);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Failed to remove item from cart.' });
   }
 };
 
-// Checkout the cart
-exports.checkout = async (req, res) => {
+exports.clearCart = async (req, res) => {
+  const userId = req.user._id;
+
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: 'You must be signed in to checkout.' });
-    }
-    const cart = await CartService.getCartByUserId(req.user._id);
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: 'Your cart is empty.' });
-    }
-    await CartService.clearCart(req.user._id);
-    res.status(200).json({ message: 'Checkout successful!' });
+    await CartService.clearCart(userId);
+    res.status(200).json({ message: 'Cart cleared successfully.' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Failed to clear cart.' });
+  }
+};
+
+exports.updateItemQuantity = async (req, res) => {
+  const userId = req.user._id;
+  const { bookId, quantity } = req.body;
+
+  try {
+    const updatedCart = await CartService.updateQuantity(userId, bookId, quantity);
+    res.status(200).json(updatedCart);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update item quantity in cart.' });
   }
 };
