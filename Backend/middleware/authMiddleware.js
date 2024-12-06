@@ -1,10 +1,9 @@
 // backend/middleware/authMiddleware
 const jwt = require('jsonwebtoken');
-const Users = require('../models/Users'); // Correct model name
+const Users = require('../models/Users'); 
 
-// Middleware to protect routes for authenticated users
 const protect = async (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1]; // Get the token from header
+  const token = req.headers['authorization']?.split(' ')[1]; 
 
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
@@ -26,7 +25,7 @@ const protect = async (req, res, next) => {
   }
 };
 
-// Middleware to allow only admin users to access certain routes
+
 const adminOnly = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
     next();
@@ -35,7 +34,7 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-// Middleware to allow only customer users to access certain routes
+
 const customerOnly = (req, res, next) => {
   if (req.user && req.user.role === 'customer') {
     next();

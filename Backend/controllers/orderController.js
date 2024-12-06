@@ -3,14 +3,14 @@ const CartService = require('../services/cartService');
 const stripe = require('stripe')('sk_test_51PM5ZmRo1ugHi7yBx8TlkVPGwBaib6rqIVeE5ucOFZvlNREuD8MMyIJSqWDxbPc6WYzQnxK6pezX4RzA1IEOVocs00vTzj3If1'); // Replace with your Stripe secret key
 const nodemailer = require('nodemailer');
 
-const YOUR_DOMAIN = 'http://localhost:3001'; // Update with your frontend domain
+const YOUR_DOMAIN = 'http://localhost:3001'; 
 
-// Nodemailer setup
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'abdulsamea2003@gmail.com',
-    pass: 'zosc xpja opef ngqp', // Use environment variables for security
+    pass: 'zosc xpja opef ngqp', 
   },
 });
 
@@ -80,7 +80,7 @@ exports.createCheckoutSession = async (req, res) => {
         product_data: {
           name: item.book.title,
         },
-        unit_amount: Math.round(item.book.price * 100), // Ensure the unit amount is an integer
+        unit_amount: Math.round(item.book.price * 100), 
       },
       quantity: item.quantity,
     }));
@@ -125,19 +125,19 @@ exports.checkoutSuccess = async (req, res) => {
       return res.status(400).json({ message: "Your cart is empty or session is invalid." });
     }
 
-    // Calculate total price
+    
     const totalPrice = cart.items.reduce(
       (total, item) => total + item.book.price * item.quantity,
       0
     );
 
-    // Create order
+    
     const orderData = {
       user: userId,
       items: cart.items,
       totalPrice,
-      shippingAddress: session.metadata.shippingAddress, // Use metadata for shipping address
-      phoneNumber: session.metadata.phoneNumber, // Use metadata for phone number
+      shippingAddress: session.metadata.shippingAddress, 
+      phoneNumber: session.metadata.phoneNumber, 
       paymentMethod: "visa",
       status: "Confirmed",
     };

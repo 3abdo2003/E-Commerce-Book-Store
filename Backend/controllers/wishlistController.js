@@ -1,7 +1,7 @@
 // backend/controllers/wishlistController.js
 const wishlistService = require('../services/wishlistService');
 
-// Get the user's wishlist
+
 exports.getWishlist = async (req, res) => {
   const userId = req.user._id;
   try {
@@ -12,7 +12,6 @@ exports.getWishlist = async (req, res) => {
   }
 };
 
-// Add a book to the user's wishlist
 exports.addToWishlist = async (req, res) => {
   const { bookId } = req.body;
   const userId = req.user._id;
@@ -24,9 +23,9 @@ exports.addToWishlist = async (req, res) => {
   }
 };
 
-// Remove a book from the user's wishlist
+
 exports.removeFromWishlist = async (req, res) => {
-  const { id: bookId } = req.params;  // using 'id' param to match the route
+  const { id: bookId } = req.params;  
   const userId = req.user._id;
   try {
     const wishlist = await wishlistService.removeFromWishlist(userId, bookId);

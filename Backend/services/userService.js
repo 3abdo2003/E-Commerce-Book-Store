@@ -9,18 +9,18 @@ exports.registerUser = async (userData) => {
         throw new Error('User already exists');
       }
   
-      // Hash the user's password before saving
+      
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(userData.password, salt);
   
-      // Create a new user with the hashed password
+      
       const newUser = new User({
         name: userData.name,
         email: userData.email,
         password: hashedPassword,
       });
   
-      // Save the user to the database
+      
       return await newUser.save();
     } catch (error) {
       throw new Error(error.message);
@@ -41,10 +41,10 @@ exports.registerUser = async (userData) => {
   
       // Generate a token
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '1h', // Adjust expiration as needed
+        expiresIn: '1h', 
       });
   
-      return { user, token }; // Return both user and token
+      return { user, token }; 
     } catch (error) {
       throw new Error(error.message);
     }

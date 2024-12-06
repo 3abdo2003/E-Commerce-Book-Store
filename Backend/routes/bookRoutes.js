@@ -7,7 +7,7 @@ const router = express.Router();
 // Public Routes
 router.get('/', bookController.getBooks); 
 router.get('/:id', bookController.getBookById); 
-// Admin Routes (Protected)
+// Admin Routes
 router.post('/', protect, adminOnly, bookController.createBook); 
 router.put('/:id', protect, adminOnly, bookController.updateBook); 
 router.delete('/:id', protect, adminOnly, bookController.deleteBook);
